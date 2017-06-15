@@ -15,8 +15,9 @@ class CamSource(VideoSource):
         '''
         Constructor
         '''
+        super(CamSource,self).__init__()
         self.cam = cv2.VideoCapture(cam_num)
         
-    def __loadFrame(self):
+    def _loadFrame(self):
         frame = self.cam.read()[1] 
         return frame

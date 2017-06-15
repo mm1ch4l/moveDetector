@@ -20,10 +20,10 @@ class VideoSource(object):
     
     def getFrame(self):
         time.sleep(self.frameDelay)
-        frame = self.__loadFrame()
+        frame = self._loadFrame()
         return self._filter(frame)
         
-    def __loadFrame(self):
+    def _loadFrame(self):
         raise NotImplementedError
     
     def _filter(self, frame):

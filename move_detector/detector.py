@@ -11,7 +11,7 @@ class Detector(object):
     '''
 
 
-    def __init__(self, videoSource):
+    def __init__(self, videoSource, mask):
         '''
         Constructor
         '''
@@ -22,6 +22,8 @@ class Detector(object):
         self.moveMapFilterSize = 10
         self.moveMapTreshold = 3
         self.detectionTheshold = 100
+        self.mask = mask
+        self.detectionMap = None
     
     def _diffImg(self):
         d1 = cv2.absdiff(self.t2Frame, self.t1Frame)
@@ -31,11 +33,11 @@ class Detector(object):
     def findMovePoints(self):
         moveMap = self._diffImg()
         moveMap = cv2.bilateralFilter(moveMap, self.moveMapFilterSize, 75, 75)
-        return moveMap
+        return self.mask.applyMask(moveMap)
     
     def isMoveDetected(self, moveMap):
-        detectionMap = cv2.inRange(moveMap, self.moveMapTreshold, 255)
-        if(cv2.countNonZero(detectionMap)> self.detectionTheshold):
+        self.detectionMap = cv2.inRange(moveMap, self.moveMapTreshold, 255)
+        if(cv2.countNonZero(self.detectionMap)> self.detectionTheshold):
             return True
         else:
             return False

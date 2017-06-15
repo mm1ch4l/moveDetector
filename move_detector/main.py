@@ -3,56 +3,88 @@ Created on 15.06.2017
 
 @author: michal
 '''
-import cv2
 import time
+import cv2
+import numpy as np
 from pygame import mixer
 from camSource import CamSource
-def diffImg(t0, t1, t2):
-    d1 = cv2.absdiff(t2, t1)
-    d2 = cv2.absdiff(t1, t0)
-    return cv2.bitwise_and(d1, d2)
+from detector import Detector
 
 mixer.init()
 mixer.music.load('Wake-up-sounds.mp3')
 
 cam = CamSource(0)
-cam.frameDelay = 0.1
+cam.frameDelay = 0
 
-def mouseCallBack(event,x,y,flags,params):
-    if(event == cv2.EVENT_LBUTTONDOWN):
-        print(x,y)
 
 
 winName = "Movement Indicator"
 get_frame_window = "get_frame"
-cv2.namedWindow(winName, cv2.WINDOW_AUTOSIZE)
-cv2.namedWindow(get_frame_window, cv2.WINDOW_AUTOSIZE)
-cv2.setMouseCallback(get_frame_window, mouseCallBack)
-# Read three images first:
-t_minus = cam.getFrame()
-t = cam.getFrame()
-t_plus = cam.getFrame()
+mask_window = "mask"
 
 
+detector = Detector(cam)
+class Mask:
+    def __init__(self, size):
+        self.mask = np.ones(size, dtype=np.bool)
+        self.mask[:100,:100] = False
+        self.mouseLeftButtonIsDown = False
+        self.mouseRightButtonIsDown = False
+        self.penSize = 20
+    def applyMask(self,frame):
+        return frame * self.mask.astype(frame.dtype)
 
-while True:
-    diff = diffImg(t_minus, t, t_plus)
-    diff = cv2.bilateralFilter(diff, 10, 75, 75)
-    diff = cv2.inRange(diff, 3 , 255)
-    cv2.imshow(winName, diff)
-    non_zero = cv2.countNonZero(diff) 
-    if (non_zero > 50):
-        print(non_zero)
-        #mixer.music.play()
-
-
-    # Read next image
-    new_frame = cam.getFrame()
-    cv2.imshow(get_frame_window, new_frame)
-    t_minus = t
-    t = t_plus
-    t_plus = new_frame  # cv2.cvtColor(new_frame, cv2.COLOR_RGB2GRAY)
+    def editViaMouse(self,event, x, y, flag, param):
+        print(x,y)
+        self._decodeMouseEvent(event)
+        if(self.mouseLeftButtonIsDown):
+            self.addToMask(x, y)
+        elif(self.mouseRightButtonIsDown):
+            self.removeFromMask(x, y)
+    def _decodeMouseEvent(self, event):
+        if (cv2.EVENT_LBUTTONDOWN == event):
+            self.mouseLeftButtonIsDown = True
+        elif(cv2.EVENT_LBUTTONUP == event):
+            self.mouseLeftButtonIsDown = False
+        elif(cv2.EVENT_RBUTTONDOWN == event):
+            self.mouseRightButtonIsDown = True
+        elif(cv2.EVENT_RBUTTONUP == event):
+            self.mouseRightButtonIsDown = False
+    def yPenRange(self, y):
+        yMin = max(0, y - self.penSize)
+        yMax = min(self.mask.shape[1], y + self.penSize)
+        return (yMin, yMax)
     
+    def xPenRange(self, x):
+        xMin = max(0, x - self.penSize)
+        xMax = min(self.mask.shape[0], x + self.penSize)
+        return (xMin, xMax)
+    
+    def addToMask(self,x,y):
+        xMin,xMax = self.xPenRange(x)
+        yMin,yMax = self.yPenRange(y)
+        self.mask[yMin:yMax,xMin:xMax] = True
+    def removeFromMask(self,x,y):
+        xMin,xMax = self.xPenRange(x)
+        yMin,yMax = self.yPenRange(y)
+        self.mask[yMin:yMax,xMin:xMax] = False
+
+def mcb(e,x,y,f,p):
+    print(x,y)
+m = Mask(detector.t0Frame.shape)
+cv2.namedWindow(mask_window, cv2.WINDOW_AUTOSIZE)
+
+# cv2.setMouseCallback(mask_window,mcb)
+cv2.setMouseCallback(mask_window,m.editViaMouse)
+while True:
+    
+    
+    if (detector.watch()):
+        print("MOVE DETECTED")
+        #mixer.music.play()
+    #cv2.imshow(winName, detector.t0Frame)
+    #cv2.imshow(get_frame_window, detector.findMovePoints())
+    cv2.imshow(mask_window, m.applyMask(detector.t0Frame))
     key = cv2.waitKey(10)
     if key == 27:
         cv2.destroyWindow(winName)

@@ -28,5 +28,5 @@ class VideoSource(object):
     
     def _filter(self, frame):
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-        frame = cv2.bilateralFilter(frame, self.bilateralFilter_D, 75, 75)
+        #frame = cv2.bilateralFilter(frame, self.bilateralFilter_D, 75, 75)
         return frame

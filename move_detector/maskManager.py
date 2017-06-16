@@ -31,12 +31,12 @@ class MaskManager:
         elif(cv2.EVENT_RBUTTONUP == event):
             self.mouseRightButtonIsDown = False
     def yPenRange(self, y):
-        yMin = max(1, y - self.penSize)
+        yMin = max(0, y - self.penSize)
         yMax = min(self.mask.shape[0], y + self.penSize)
         return (yMin, yMax)
     
     def xPenRange(self, x):
-        xMin = max(1, x - self.penSize)
+        xMin = max(0, x - self.penSize)
         xMax = min(self.mask.shape[1], x + self.penSize)
         return (xMin, xMax)
     

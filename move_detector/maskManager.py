@@ -8,12 +8,18 @@ import cv2
 class MaskManager:
     def __init__(self, size):
         self.mask = np.ones(size, dtype=np.bool)
-        self.mask[:100,:100] = False
+        self.mask[:300,:300] = False
         self.mouseLeftButtonIsDown = False
         self.mouseRightButtonIsDown = False
         self.penSize = 20
+    def drawMask(self, frame):
+#         frame[:,:,1] =  np.where(np.invert(self.mask), 255, frame[:,:,1])
+        frame[:,:,0] =  np.where(np.invert(self.mask), 0, frame[:,:,0])
+        frame[:,:,2] =  np.where(np.invert(self.mask), 0, frame[:,:,2])
+        return frame
+    
     def applyMask(self,frame):
-        return frame * self.mask.astype(frame.dtype)
+        return frame *  self.mask.astype(frame.dtype)
 
     def editViaMouse(self,event, x, y, flag, param):
         self._decodeMouseEvent(event)

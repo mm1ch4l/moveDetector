@@ -6,6 +6,7 @@ Created on 15.06.2017
 
 import cv2
 import time
+import numpy as np
 class Detector(object):
     '''
     Tetect moves form cameras
@@ -26,8 +27,8 @@ class Detector(object):
         self.mask = mask
         self.detectionMap = None
         self.moveEventsTime = []
-        self.maxTimeEventsHistory = 10
-        self.eventNumTreshold = 5
+        self.maxTimeEventsHistory = 20
+        self.eventNumTreshold = 15
         
     def _diffImg(self):
         d1 = cv2.absdiff(self.t2Frame, self.t1Frame)
@@ -72,3 +73,9 @@ class Detector(object):
         self.getNewFrame()
         moveMap = self.findMovePoints()
         return self.isMoveDetected(moveMap)
+    
+    def drawEvents(self,frame):
+        frame[:,:,1] =  np.where(self.detectionMap, 0, frame[:,:,1])
+        frame[:,:,0] =  np.where(self.detectionMap, 0, frame[:,:,0])
+        return frame
+        

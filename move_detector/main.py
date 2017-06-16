@@ -13,10 +13,9 @@ from maskManager import MaskManager
 mixer.init()
 mixer.music.load('Wake-up-sounds.mp3')
 
-cam = CamSource("http://192.168.1.106:8080/video")
-time.sleep(3)
-cam.frameDelay = 0.2
-cam.detectionTheshold = 100
+# cam = CamSource("http://192.168.1.106:8080/video")
+cam = CamSource(0)
+time.sleep(1)
 
 winName = "Movement Indicator"
 get_frame_window = "get_frame"
@@ -37,10 +36,13 @@ while True:
     if (detector.watch()):
         counter +=1
         print("MOVE DETECTED: " + str(counter))
-        #mixer.music.play()
+        mixer.music.play()
 #     cv2.imshow(winName, vid.read()[1])
-    cv2.imshow(get_frame_window, detector.detectionMap)
-    cv2.imshow(mask_window, m.applyMask(detector.t0Frame))
+    frame = cv2.cvtColor(detector.t2Frame, cv2.COLOR_GRAY2RGB)
+    frame = m.drawMask(frame)
+    frame = detector.drawEvents(frame)
+#     cv2.imshow(get_frame_window, detector.detectionMap)
+    cv2.imshow(mask_window, frame)
     key = cv2.waitKey(10)
     if key == 27:
         cv2.destroyWindow(winName)

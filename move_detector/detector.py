@@ -12,6 +12,7 @@ from camSource import CamSource
 from maskManager import MaskManager
 def initDetector():
     cam = CamSource(0)
+#     cam = CamSource("http://192.168.1.106:8080/video")
     time.sleep(3)
     m = MaskManager(cam.getFrame().shape)
     detector = Detector(cam,m )

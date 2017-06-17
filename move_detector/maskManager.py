@@ -5,10 +5,11 @@ Created on 15.06.2017
 '''
 import numpy as np
 import cv2
+from os.path import exists
 class MaskManager:
     def __init__(self, size):
         self.mask = np.ones(size, dtype=np.bool)
-        self.mask[:300,:300] = False
+        self.load()
         self.mouseLeftButtonIsDown = False
         self.mouseRightButtonIsDown = False
         self.penSize = 20
@@ -54,3 +55,12 @@ class MaskManager:
         xMin,xMax = self.xPenRange(x)
         yMin,yMax = self.yPenRange(y)
         self.mask[yMin:yMax,xMin:xMax] = False
+        
+    def save(self):
+        np.save("mask.save", self.mask)
+        print("mask saved")
+    
+    def load(self):
+        if exists("mask.save.npy"):
+            self.mask = np.load("mask.save.npy")
+            print("mask loaded")

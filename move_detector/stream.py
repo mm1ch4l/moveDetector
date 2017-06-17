@@ -6,8 +6,6 @@ Created on 16.06.2017
 
 from flask import Flask, render_template, Response
 import time
-import cv2
-import numpy as np
 import detector as d_mod
 # from multiprocessing import Process, Lock
 import copy
@@ -29,6 +27,7 @@ def gen():
         lock.acquire()
         frame = globalJpegFrame 
         lock.release()
+        time.sleep(0.5)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' +  frame+ b'\r\n\r\n')
 
@@ -39,6 +38,7 @@ def video_feed():
 
 @app.route('/alarm_feed')
 def alarm_feed():
+    print("alarm feed")
     def generate():
         with open("Wake-up-sounds.mp3", "rb") as mp3:
             data = mp3.read(1024)
@@ -48,6 +48,7 @@ def alarm_feed():
     return Response(generate(), mimetype="audio/mpeg")
 @app.route('/alarm_info')
 def alarm_info():
+    print("alarm_info")
     lock.acquire()
     moveDetection = globalMoveDetection 
     lock.release()
@@ -68,13 +69,13 @@ def detectorThred():
         moveDetection = detector.watch()
         jpegFrame = d_mod.drawDetectorViewJPEG(detector)
         lock.acquire()
-        print("new_data")
         globalMoveDetection = moveDetection
-        print(moveDetection)
         globalJpegFrame = jpegFrame
         lock.release()
         
 if __name__ == '__main__':
     start_new_thread(detectorThred,())
     time.sleep(10)
-    app.run(host='0.0.0.0', debug=False)
+    print("start flask")
+    app.run(host='0.0.0.0', debug=True, use_reloader=False)
+    

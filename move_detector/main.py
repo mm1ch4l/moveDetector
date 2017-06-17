@@ -47,4 +47,5 @@ while True:
     if key == 27:
         cv2.destroyWindow(winName)
         break
+m.save()
 print ("Goodbye")

@@ -77,5 +77,5 @@ if __name__ == '__main__':
     start_new_thread(detectorThred,())
     time.sleep(10)
     print("start flask")
-    app.run(host='0.0.0.0', debug=True, use_reloader=False)
+    app.run(host='0.0.0.0', debug=True, use_reloader=False, threaded=True)
     

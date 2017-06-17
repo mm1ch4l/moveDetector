@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>Video Streaming Demonstration</title>
+  </head>
+  <body>
+    <h1>Video Streaming Demonstration</h1>
+    <!--<img id="bg" src="{{ url_for('video_feed') }}"><br>-->
+    <audio id="alarm" src="{{ url_for('alarm_feed') }}" controls>
+  	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+	
+			
+		
+		
+		function play_alarm() {
+			$.getJSON("alarm_info", function(json) {
+    			console.log(json); // this will show the info it in firebug console
+				if (json.moveDetected == true)
+				{var player = document.getElementById('alarm');
+					player.load();
+					
+				}
+			});
+		  
+			
+		}
+	
+
+		function check_alarm() {
+			window.setInterval(
+				function() play_alarm(),
+				1000);
+
+		
+		}
+		window.onload = function start() {
+    		check_alarm();
+		};
+		
+
+    </script>
+  </body>
+</html>

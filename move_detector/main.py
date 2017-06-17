@@ -39,7 +39,7 @@ while True:
         mixer.music.play()
 #     cv2.imshow(winName, vid.read()[1])
     frame = cv2.cvtColor(detector.t2Frame, cv2.COLOR_GRAY2RGB)
-    frame = m.drawMask(frame)
+    frame = detector.mask.drawMask(frame)
     frame = detector.drawEvents(frame)
 #     cv2.imshow(get_frame_window, detector.detectionMap)
     cv2.imshow(mask_window, frame)

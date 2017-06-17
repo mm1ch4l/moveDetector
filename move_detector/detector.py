@@ -7,6 +7,23 @@ Created on 15.06.2017
 import cv2
 import time
 import numpy as np
+from camSource import CamSource
+
+from maskManager import MaskManager
+def initDetector():
+    cam = CamSource(0)
+    time.sleep(3)
+    m = MaskManager(cam.getFrame().shape)
+    detector = Detector(cam,m )
+    return detector
+
+def drawDetectorViewJPEG(detector):
+    frame = cv2.cvtColor(detector.t2Frame, cv2.COLOR_GRAY2RGB)
+    frame = detector.mask.drawMask(frame)
+    frame = detector.drawEvents(frame)
+    _, jpeg = cv2.imencode('.jpg', frame)
+    return jpeg.tobytes()
+
 class Detector(object):
     '''
     Tetect moves form cameras

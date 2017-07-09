@@ -16,15 +16,17 @@ class VideoSource(object):
         Constructor
         '''
         self.frameT = 1 #s
-        self.lastFrameT = 0
+        self.lastFrameT = time.time()
         self.bilateralFilter_D = 10
     
     def getFrame(self):
         now = time.time()
-        timeToWait = self.frameT - (now - self.lastFrameT)
-        self.lastFrameT = now
+        timeToWait =self.frameT -( now -  self.lastFrameT)
         if timeToWait > 0:
             time.sleep(timeToWait)
+            pass
+        self.lastFrameT = time.time()
+	print time.time(), timeToWait
         frame = self._loadFrame()
         return self._filter(frame)
         

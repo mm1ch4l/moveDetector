@@ -12,7 +12,7 @@ import copy
 from thread import start_new_thread, allocate_lock
 
 lock = allocate_lock()
-
+frameT = 1
 
 app = Flask(__name__)
 
@@ -27,7 +27,7 @@ def gen():
         lock.acquire()
         frame = globalJpegFrame 
         lock.release()
-        time.sleep(0.5)
+        time.sleep(frameT)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' +  frame+ b'\r\n\r\n')
 

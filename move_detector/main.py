@@ -6,16 +6,16 @@ Created on 15.06.2017
 import time
 import cv2
 import numpy as np
-from pygame import mixer
+#from pygame import mixer
 from camSource import CamSource
 from detector import Detector
 from maskManager import MaskManager
-mixer.init()
-mixer.music.load('Wake-up-sounds.mp3')
+#mixer.init()
+#mixer.music.load('Wake-up-sounds.mp3')
 
-# cam = CamSource("http://192.168.1.106:8080/video")
-cam = CamSource(0)
-time.sleep(1)
+cam = CamSource("http://192.168.1.106:8080/video")
+#cam = CamSource(0)
+cam.frameT = 3
 
 winName = "Movement Indicator"
 get_frame_window = "get_frame"
@@ -36,7 +36,7 @@ while True:
     if (detector.watch()):
         counter +=1
         print("MOVE DETECTED: " + str(counter))
-        mixer.music.play()
+ #       mixer.music.play()
 #     cv2.imshow(winName, vid.read()[1])
     frame = cv2.cvtColor(detector.t2Frame, cv2.COLOR_GRAY2RGB)
     frame = detector.mask.drawMask(frame)

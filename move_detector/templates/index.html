@@ -5,7 +5,7 @@
   <body>
     <h1>Video Streaming Demonstration</h1>
    <img id="bg" src="{{ url_for('video_feed') }}"><br>
-    <audio id="alarm" src="{{ url_for('alarm_feed') }}" controls>
+    <audio id="alarm" src="{{ url_for('alarm_feed') }}" controls loop>
   	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script type="text/javascript">
 	
@@ -15,11 +15,15 @@
 		function play_alarm() {
 			$.getJSON("alarm_info", function(json) {
     			console.log(json); // this will show the info it in firebug console
+				var player = document.getElementById('alarm');				
 				if (json.moveDetected == true)
-				{var player = document.getElementById('alarm');
-					player.load();
+				{
 					player.play();
 					
+				}
+				else
+				{
+					player.pause();				
 				}
 			});
 		  
